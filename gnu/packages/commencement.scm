@@ -559,6 +559,9 @@ MesCC-Tools), and finally M2-Planet.")
                 (setenv "ONE_SOURCE" "true")
                 (invoke "sh" "configure"
                         "--cc=mescc"
+                        (string-append
+                          "--cpu=" (car (string-split
+                                          #$(commencement-build-target) #\-)))
                         (string-append "--prefix=" out)
                         (string-append "--elfinterp=" interpreter)
                         "--crtprefix=."
