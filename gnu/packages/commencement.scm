@@ -1095,6 +1095,10 @@ MesCC-Tools), and finally M2-Planet.")
                     "-o" "tcc"
                     "tcc.c"))))))))))
 
+(define (%boot-tcc-musl-inputs)
+  (modify-inputs (%boot-tcc-inputs)
+    (replace "tcc" tcc-musl)))
+
 (define binutils-muslboot0
   ;; The initial Binutils
   (package
