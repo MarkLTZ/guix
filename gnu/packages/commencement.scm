@@ -1099,6 +1099,8 @@ MesCC-Tools), and finally M2-Planet.")
   (modify-inputs (%boot-tcc-inputs)
     (replace "tcc" tcc-musl)))
 
+;; We need something a bit more powerful that gash, so unfortunately
+;; we need the bootstrap-bash from %bootstrap-coreutils&co.
 (define binutils-muslboot0
   ;; The initial Binutils
   (package
@@ -1116,9 +1118,8 @@ MesCC-Tools), and finally M2-Planet.")
     (inputs '())
     (propagated-inputs '())
     ;(native-inputs (%boot-tcc-musl-inputs))
-    (native-inputs (modify-inputs (package-native-inputs tcc-musl)
-                                  (replace "tcc" tcc-musl)))
-    (supported-systems '("i686-linux" "x86_64-linux" "riscv64-linux"))
+    (native-inputs (modify-inputs (%boot-tcc-musl-inputs)
+                   (prepend %bootstrap-coreutils&co)))
     (arguments
      (list #:implicit-inputs? #f
            #:guile %bootstrap-guile
@@ -1142,24 +1143,26 @@ MesCC-Tools), and finally M2-Planet.")
                  (call-with-output-file "bfd/po/info"
                    (lambda (p) (display "" p))))))
            #:configure-flags
-           #~(let ((bash (assoc-ref %build-inputs "bash")))
-               `(,(string-append "CONFIG_SHELL=" bash "/bin/sh")
-                 "CFLAGS=-g"
-                 "CC=tcc"
-                 "LD=tcc"
-                 "AR=tcc -ar"
-                 "MAKEINFO=true"
-                 "RANLIB=true"
-                 "--enable-64-bit-bfd"
-                 "--disable-nls"
-                 "--enable-static"
-                 "--disable-shared"
-                 "--disable-werror"
-                 "--disable-plugins"
-                 "--enable-deterministic-archives"
-                 "--with-sysroot=/"
-                 ,(string-append "--build=" #$(commencement-build-target))
-                 ,(string-append "--host=" #$(commencement-build-target))))))))
+           #~(list
+               (string-append "CONFIG_SHELL="
+                              (search-input-file %build-inputs "/bin/bash"))
+               (string-append "SHELL="
+                              (search-input-file %build-inputs "/bin/bash"))
+               "CFLAGS=-g"
+               "CC=tcc"
+               "LD=tcc"
+               "AR=tcc -ar"
+               "MAKEINFO=true"
+               "RANLIB=true"
+               "--enable-64-bit-bfd"
+               "--disable-nls"
+               "--disable-shared"
+               "--disable-werror"
+               "--disable-plugins"
+               "--enable-deterministic-archives"
+               "--with-sysroot=/"
+               (string-append "--build=" #$(commencement-build-target))
+               (string-append "--host=" #$(commencement-build-target)))))))
 
 ;; This part is the non-riscv64 portion of the bootstrap.
 (define binutils-mesboot0
