@@ -1070,10 +1070,6 @@ MesCC-Tools), and finally M2-Planet.")
                     "-o" "tcc"
                     "tcc.c"))))))))))
 
-(define (%boot-tcc-musl-inputs)
-  (modify-inputs (%boot-tcc-inputs)
-    (replace "tcc" tcc-musl)))
-
 ;; We need something a bit more powerful that gash, so unfortunately
 ;; we need the bootstrap-bash from %bootstrap-coreutils&co.
 (define binutils-muslboot0
@@ -1123,6 +1119,15 @@ MesCC-Tools), and finally M2-Planet.")
                "--with-sysroot=/"
                (string-append "--build=" #$(commencement-build-target))
                (string-append "--host=" #$(commencement-build-target)))))))
+
+(define (%boot-tcc-musl-inputs)
+  `(("tcc" ,tcc-musl)
+    ("binutils" ,binutils-muslboot0)
+    ("kernel-headers" ,%bootstrap-linux-libre-headers)
+    ("libc" ,musl-boot0)
+    ("bash" ,%bootstrap-coreutils&co)
+    ,@(fold alist-delete (%boot-tcc-inputs)
+            '("bash" "tcc"))))
 
 ;; This part is the non-riscv64 portion of the bootstrap.
 (define binutils-mesboot0
