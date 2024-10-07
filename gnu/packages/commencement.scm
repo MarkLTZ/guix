@@ -1621,8 +1621,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (string-append "--build=" #$(commencement-build-target))
                (string-append "--host=" #$(commencement-build-target))
                "--enable-static"
-               "--disable-shared"
-               "--disable-assembly")))))
+               "--disable-shared")))))
 
 (define mpc-boot
   (package
