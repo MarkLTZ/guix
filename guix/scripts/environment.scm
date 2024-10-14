@@ -465,7 +465,8 @@ providing a symlink for CC if GCC is in the container PROFILE, and writing
   ;; bin directories will link to /bin.
   (let ((gcc-path (string-append profile "/bin/gcc")))
     (if (file-exists? gcc-path)
-        (symlink gcc-path "/bin/cc")))
+        (unless (file-exists? "/bin/cc")
+            (symlink gcc-path "/bin/cc"))))
 
   ;; Guix's ldconfig doesn't search in FHS default locations, so provide a
   ;; minimal ld.so.conf.

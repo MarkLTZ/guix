@@ -515,6 +515,11 @@ code analysis tools.")
                      ;; Create 'cc' and 'c++' so that one can use it as a
                      ;; drop-in replacement for the default tool chain and
                      ;; have configure scripts find the compiler.
+                     (if (file-exists? (string-append out "/bin/cc"))
+                       (delete-file (string-append out "/bin/cc")))
+                     (if (file-exists? (string-append out "/bin/c++"))
+                       (delete-file (string-append out "/bin/c++")))
+
                      (symlink "clang" (string-append out "/bin/cc"))
                      (symlink "clang++" (string-append out "/bin/c++"))
 
